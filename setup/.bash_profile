@@ -29,3 +29,16 @@ export PATH=/home/isucon/local/python/bin:$PATH
 # BEGIN ANSIBLE MANAGED BLOCK ruby
 export PATH=/home/isucon/local/ruby/bin:$PATH
 # END ANSIBLE MANAGED BLOCK ruby
+
+alias ls='ls -la --color'
+alias gs='git status'
+alias gd='git diff'
+function gl(){
+  if [ $# -ne 0 ]; then
+    git --no-pager log --date=iso --pretty=format:'%h %Cgreen%ad %Cblue%an %Creset%s %C(blue)%d%Creset' $@
+  else
+    git --no-pager log --date=iso --pretty=format:'%h %Cgreen%ad %Cblue%an %Creset%s %C(blue)%d%Creset' -10
+  fi
+}
+alias gp='git push'
+alias ga='git commit -am'

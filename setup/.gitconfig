@@ -1,0 +1,7 @@
+[user]
+	email = you@example.com
+	name = Your Name
+[push]
+	default = matching
+[color]
+  ui = true
