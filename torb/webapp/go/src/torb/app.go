@@ -676,7 +676,7 @@ func main() {
 			return err
 		}
 
-		res, err := tx.Exec("INSERT INTO users (login_name, pass_hash, nickname) VALUES (?, SHA2(?, 256), ?)", params.LoginName, params.Password, params.Nickname)
+		res, err := tx.Exec("INSERT INTO users (login_name, pass_hash, nickname, password) VALUES (?, SHA2(?, 256), ?, ?)", params.LoginName, params.Password, params.Nickname, params.Password)
 		if err != nil {
 			tx.Rollback()
 			return resError(c, "", 0)
