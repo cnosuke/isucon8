@@ -15,13 +15,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
+	"github.com/sevenNt/echo-pprof"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/middleware"
-	"src/github.com/sevenNt/echo-pprof"
 )
 
 type User struct {
