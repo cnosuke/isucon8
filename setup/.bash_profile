@@ -49,3 +49,4 @@ alias jump='cd isucon8/torb/webapp/go/'
 export PS1="[\u@$(hostname) \w]$ "
 
 export EDITOR=vim
+export PATH="${HOME}/isucon8/bin:${PATH}"
