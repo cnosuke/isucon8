@@ -244,7 +244,7 @@ func getEvent(eventID, loginUserID int64) (*Event, error) {
 
 func getEventChildrenLegacy(event *Event, loginUserID int64) error {
 
-	if err := db.QueryRow("SELECT * FROM events WHERE id = ?", eventID).Scan(&event.ID, &event.Title, &event.PublicFg, &event.ClosedFg, &event.Price); err != nil {
+	if err := db.QueryRow("SELECT * FROM events WHERE id = ?", event.ID).Scan(&event.ID, &event.Title, &event.PublicFg, &event.ClosedFg, &event.Price); err != nil {
 		return err
 	}
 	event.Sheets = map[string]*Sheets{
