@@ -403,7 +403,7 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		sIDs = append(sIDs, sheet.ID)
 	}
 
-	rs, err := getReservationFuck2(event.ID, sIDs)
+	rs, err := getReservationFuck3(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
@@ -469,6 +469,28 @@ func getReservationFuck2(eID int64, sIDs []int64) ([]*Reservation, error) {
 				"sheet_id":    sID,
 				"canceled_at": nil,
 			}).GroupBy(`sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
+			Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				continue
+			}
+			return nil, err
+		}
+		rs = append(rs, &reservation)
+	}
+	return rs, nil
+}
+
+func getReservationFuck3(eID int64, sIDs []int64) ([]*Reservation, error) {
+	var rs []*Reservation
+	for _, sID := range sIDs {
+		var reservation Reservation
+		err := sq.Select(`*`).From("reservations").
+			Where(sq.Eq{
+				"event_id":    eID,
+				"sheet_id":    sID,
+				"canceled_at": nil,
+			}).Where(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
 			Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
 		if err != nil {
 			if err == sql.ErrNoRows {
