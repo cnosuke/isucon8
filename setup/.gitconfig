@@ -1,7 +1,19 @@
 [user]
-	email = you@example.com
-	name = Your Name
+	email = isuconserver@example.com
+	name = isucon
 [push]
 	default = matching
 [color]
   ui = true
+[alias]
+  a  = add --verbose
+  ad = add .
+  br = branch
+  ci = commit -am
+  cm = commit -m
+  co = checkout
+  di = diff
+  lg = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn [%G?] \n %Creset%s'
+  st = status
+  push-origin = !"B=$(git rev-parse --abbrev-ref HEAD);git push origin ${B}"
+  po = !"git push-origin"
