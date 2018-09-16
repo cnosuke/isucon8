@@ -23,7 +23,6 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/middleware"
-	"src/github.com/sevenNt/echo-pprof"
 )
 
 type User struct {
