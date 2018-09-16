@@ -30,6 +30,7 @@ type User struct {
 	Nickname  string `json:"nickname,omitempty"`
 	LoginName string
 	PassHash  string
+	Password  string
 }
 
 type Event struct {
