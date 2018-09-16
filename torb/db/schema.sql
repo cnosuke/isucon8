@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
   pass_hash   VARCHAR(128)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ALTER TABLE users ADD UNIQUE INDEX login_name_uniq(login_name);
+ALTER TABLE users ADD INDEX idx_id_nickname(id, nickname);
 
 CREATE TABLE IF NOT EXISTS events (
   id          INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
