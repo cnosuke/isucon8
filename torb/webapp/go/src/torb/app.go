@@ -19,10 +19,10 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
-	"github.com/sevenNt/echo-pprof"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/middleware"
+	"github.com/sevenNt/echo-pprof"
 )
 
 type User struct {
@@ -83,8 +83,9 @@ type Reservation struct {
 type Administrator struct {
 	ID        int64  `json:"id,omitempty"`
 	Nickname  string `json:"nickname,omitempty"`
-	LoginName string `json:"login_name,omitempty"`
-	PassHash  string `json:"pass_hash,omitempty"`
+	LoginName string
+	PassHash  string
+	Password  string
 }
 
 func sessUserID(c echo.Context) int64 {
@@ -285,8 +286,6 @@ func getEventChildrenLegacy(event *Event, loginUserID int64) error {
 	return nil
 }
 
-
-
 func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 	event.Sheets = map[string]*Sheets{
 		"S": &Sheets{},
@@ -313,7 +312,6 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 		event.Sheets[sheet.Rank].Price = event.Price + sheet.Price
 		event.Total++
 		event.Sheets[sheet.Rank].Total++
-
 
 		sheets = append(sheets, &sheet)
 		sMap[sheet.ID] = &sheet
