@@ -338,7 +338,7 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 			return err
 		}
 
-		event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, &sheet)
+		event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, sheet)
 	}
 
 	return nil
