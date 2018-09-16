@@ -85,7 +85,6 @@ type Administrator struct {
 	Nickname  string `json:"nickname,omitempty"`
 	LoginName string
 	PassHash  string
-	Password  string
 }
 
 func sessUserID(c echo.Context) int64 {
@@ -285,7 +284,6 @@ func getEventChildrenLegacy(event *Event, loginUserID int64) error {
 
 	return nil
 }
-
 
 func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 	event.Sheets = map[string]*Sheets{
