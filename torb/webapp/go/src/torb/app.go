@@ -311,10 +311,10 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 		var reservation Reservation
 		err := sq.Select(`*`).From("reservations").
 			Where(sq.Eq{
-					"event_id":    event.ID,
-					"sheet_id":    sheet.ID,
-					"canceled_at": nil,
-				}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
+				"event_id":    event.ID,
+				"sheet_id":    sheet.ID,
+				"canceled_at": nil,
+			}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
 			Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
 		if err == nil {
 			sheet.Mine = reservation.UserID == loginUserID
