@@ -15,7 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/sevenNt/echo-pprof"
+	"net/http"
+	"net/http/pprof"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
@@ -327,7 +328,12 @@ func main() {
 	e := echo.New()
 
 	// pprof
-	echopprof.Wrap(e)
+	pprofGroup := e.Group("/debug/pprof")
+	pprofGroup.Any("/cmdline", echo.WrapHandler(http.HandlerFunc(pprof.Cmdline)))
+	pprofGroup.Any("/profile", echo.WrapHandler(http.HandlerFunc(pprof.Profile)))
+	pprofGroup.Any("/symbol", echo.WrapHandler(http.HandlerFunc(pprof.Symbol)))
+	pprofGroup.Any("/trace", echo.WrapHandler(http.HandlerFunc(pprof.Trace)))
+	pprofGroup.Any("/*", echo.WrapHandler(http.HandlerFunc(pprof.Index)))
 
 	funcs := template.FuncMap{
 		"encode_json": func(v interface{}) string {

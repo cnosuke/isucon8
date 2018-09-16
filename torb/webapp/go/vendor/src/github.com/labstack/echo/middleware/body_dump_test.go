@@ -60,7 +60,12 @@ func TestBodyDumpFails(t *testing.T) {
 		return errors.New("some error")
 	}
 
-	mw := BodyDump(func(c echo.Context, reqBody, resBody []byte) {})
+	requestBody := ""
+	responseBody := ""
+	mw := BodyDump(func(c echo.Context, reqBody, resBody []byte) {
+		requestBody = string(reqBody)
+		responseBody = string(resBody)
+	})
 
 	if !assert.Error(t, mw(h)(c)) {
 		t.FailNow()
@@ -79,6 +84,8 @@ func TestBodyDumpFails(t *testing.T) {
 				return true
 			},
 			Handler: func(c echo.Context, reqBody, resBody []byte) {
+				requestBody = string(reqBody)
+				responseBody = string(resBody)
 			},
 		})
 
