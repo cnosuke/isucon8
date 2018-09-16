@@ -22,6 +22,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"github.com/k0kubun/pp"
 )
 
 type User struct {
@@ -223,6 +224,7 @@ func getEvents(all bool) ([]*Event, error) {
 			return nil, err
 		}
 		for k := range event.Sheets {
+			pp.Print(event)
 			event.Sheets[k].Detail = nil
 		}
 		events[i] = event
