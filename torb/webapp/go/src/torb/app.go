@@ -254,7 +254,7 @@ func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 
 	var sheets []*Sheet
 	var sIDs []int64
-	var sMap map[int64]*Sheet
+	var sMap = map[int64]*Sheet{}
 	for rows.Next() {
 		var sheet Sheet
 		if err := rows.Scan(&sheet.ID, &sheet.Rank, &sheet.Num, &sheet.Price); err != nil {
