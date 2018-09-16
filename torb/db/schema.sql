@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS users (
   id          INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   nickname    VARCHAR(128) NOT NULL,
   login_name  VARCHAR(128) NOT NULL,
-  password    VARCHAR(256)
+  password    VARCHAR(256),
+  pass_hash   VARCHAR(128) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ALTER TABLE users ADD UNIQUE INDEX login_name_uniq(login_name);
 
