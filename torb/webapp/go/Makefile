@@ -9,4 +9,4 @@ deps:
 
 .PHONY: build
 build:
-	GO111MODULE=auto GOPATH=`pwd`:`pwd`/vendor go build -v torb
+	GOPATH=`pwd`:`pwd`/vendor go build -v torb
