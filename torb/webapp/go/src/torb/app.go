@@ -312,7 +312,7 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 		sheets = append(sheets, sheet)
 	}
 
-	var rs []Reservation
+	//var rs []Reservation
 	for _, sheet := range sheets {
 		var reservation Reservation
 		err := sq.Select(`*`).From("reservations").
