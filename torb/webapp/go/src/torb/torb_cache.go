@@ -1,5 +1,11 @@
 package main;
 
+import (
+	"fmt"
+	"net/http"
+	"os"
+)
+
 type TorbCache struct {
 	Data map[int64]interface{}
 }
@@ -13,6 +19,16 @@ func (t *TorbCache) GetData(uid int64) interface{} {
 }
 
 func (t *TorbCache) ResetData(uid int64) {
+	t.Data[uid] = nil
+	GlobalTorbIndexCache.ResetData()
+
+
+	http.Get(
+		fmt.Sprintf("http://%s/cacheInvalidate/user/%d", os.Getenv("ANOTHER_APP_SERVER"), uid),
+		)
+}
+
+func (t *TorbCache) ResetDataByRemote(uid int64) {
 	t.Data[uid] = nil
 	GlobalTorbIndexCache.ResetData()
 }
@@ -43,6 +59,14 @@ func (t *TorbIndexCache) GetData() []*Event {
 }
 
 func (t *TorbIndexCache) ResetData() {
+	t.Data = nil
+
+	http.Get(
+		fmt.Sprintf("http://%s/cacheInvalidate/index", os.Getenv("ANOTHER_APP_SERVER")),
+	)
+}
+
+func (t *TorbIndexCache) ResetDataByRemote() {
 	t.Data = nil
 }
 

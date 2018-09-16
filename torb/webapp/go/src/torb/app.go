@@ -1248,6 +1248,17 @@ func main() {
 		return renderReportCSV(c, reports)
 	}, adminLoginRequired)
 
+	e.GET("/cacheInvalidate/user/:userId", func(c echo.Context) error {
+		userId, _ := strconv.ParseInt(c.Param("userId"), 10, 64)
+
+		GlobalTorbCache.ResetDataByRemote(userId)
+		return nil
+	})
+	e.GET("/cacheInvalidate/index", func(c echo.Context) error {
+		GlobalTorbIndexCache.ResetDataByRemote()
+		return nil
+	})
+
 	echopprof.Wrap(e)
 
 	e.Start(":8080")
