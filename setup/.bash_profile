@@ -45,7 +45,7 @@ alias gp='git push'
 alias ga='git commit -am'
 alias restartgo='sudo systemctl restart torb.go'
 alias jump='cd isucon8/torb/webapp/go/'
-
+alias prof='go tool pprof -raw -seconds 30 http://localhost:8080/debug/pprof/profile'
 export PS1="[\u@$(hostname) \w]$ "
 
 export EDITOR=vim
