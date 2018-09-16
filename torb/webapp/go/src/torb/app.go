@@ -15,7 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"net/http"
+	"github.com/sevenNt/echo-pprof"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
@@ -318,8 +318,6 @@ func main() {
 		os.Getenv("DB_DATABASE"),
 	)
 
-	go http.ListenAndServe(":3000", nil)
-
 	var err error
 	db, err = sql.Open("mysql", dsn)
 	if err != nil {
@@ -327,6 +325,10 @@ func main() {
 	}
 
 	e := echo.New()
+
+	// pprof
+	echopprof.Wrap(e)
+
 	funcs := template.FuncMap{
 		"encode_json": func(v interface{}) string {
 			b, _ := json.Marshal(v)

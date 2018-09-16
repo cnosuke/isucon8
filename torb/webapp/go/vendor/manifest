@@ -92,6 +92,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/sevenNt/echo-pprof",
+			"repository": "https://github.com/sevenNt/echo-pprof",
+			"revision": "8bdaf794e4583c013a089f3902aa140d45a5af1c",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/valyala/bytebufferpool",
 			"repository": "https://github.com/valyala/bytebufferpool",
 			"revision": "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7",
