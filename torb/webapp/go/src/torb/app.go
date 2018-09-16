@@ -345,7 +345,7 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 	}
 
 	var rMap = map[int64]*Reservation{}
-	rs, err := getReservationFuck(event.ID, sIDs)
+	rs, err := getReservations(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
@@ -453,7 +453,6 @@ func getReservationFuck(eID int64, sIDs []int64) ([]*Reservation, error) {
 	}
 	return rs, nil
 }
-
 
 func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
 	rows, err := sq.Select(`*`).From("reservations").
