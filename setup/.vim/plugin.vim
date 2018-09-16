@@ -2,12 +2,12 @@
 " if !has("lua")
 "   echoerr "if_lua is disabled, required for neocomplete! Execute: `brew install vim --with-lua`"
 " endif
-let g:neocomplete#enable_at_startup = 1
-let g:neocomplete#enable_auto_select = 1
-inoremap <expr><C-[> neocomplete#smart_close_popup()."\<Esc>"
-let g:neocomplete#sources#dictionary#dictionaries = {
-\   'ruby': $HOME . '/.vim/dicts/ruby.dict',
-\ }
+" let g:neocomplete#enable_at_startup = 1
+" let g:neocomplete#enable_auto_select = 1
+" inoremap <expr><C-[> neocomplete#smart_close_popup()."\<Esc>"
+" let g:neocomplete#sources#dictionary#dictionaries = {
+" \   'ruby': $HOME . '/.vim/dicts/ruby.dict',
+" \ }
 " if !exists('g:neocomplete#force_omni_input_patterns')
 "   let g:neocomplete#force_omni_input_patterns = {}
 " endif
