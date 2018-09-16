@@ -15,12 +15,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"net/http"
-	"net/http/pprof"
+	"github.com/sevenNt/echo-pprof"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
-	_ "net/http/pprof"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/middleware"
@@ -328,12 +326,7 @@ func main() {
 	e := echo.New()
 
 	// pprof
-	pprofGroup := e.Group("/debug/pprof")
-	pprofGroup.Any("/cmdline", echo.WrapHandler(http.HandlerFunc(pprof.Cmdline)))
-	pprofGroup.Any("/profile", echo.WrapHandler(http.HandlerFunc(pprof.Profile)))
-	pprofGroup.Any("/symbol", echo.WrapHandler(http.HandlerFunc(pprof.Symbol)))
-	pprofGroup.Any("/trace", echo.WrapHandler(http.HandlerFunc(pprof.Trace)))
-	pprofGroup.Any("/*", echo.WrapHandler(http.HandlerFunc(pprof.Index)))
+	echopprof.Wrap(e)
 
 	funcs := template.FuncMap{
 		"encode_json": func(v interface{}) string {
