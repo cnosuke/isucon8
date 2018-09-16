@@ -164,6 +164,14 @@ func adminLoginRequired(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+func getLoginUserID(c echo.Context) (int64, error) {
+	userID := sessUserID(c)
+	if userID == 0 {
+		return 0, errors.New("not logged in")
+	}
+	return userID, nil
+}
+
 func getLoginUser(c echo.Context) (*User, error) {
 	userID := sessUserID(c)
 	if userID == 0 {
@@ -542,8 +550,8 @@ func main() {
 		}
 
 		loginUserID := int64(-1)
-		if user, err := getLoginUser(c); err == nil {
-			loginUserID = user.ID
+		if userID, err := getLoginUserID(c); err == nil {
+			loginUserID = userID
 		}
 
 		event, err := getEvent(eventID, loginUserID)
@@ -567,12 +575,12 @@ func main() {
 		}
 		c.Bind(&params)
 
-		user, err := getLoginUser(c)
+		userID, err := getLoginUserID(c)
 		if err != nil {
 			return err
 		}
 
-		event, err := getEvent(eventID, user.ID)
+		event, err := getEvent(eventID, userID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				return resError(c, "invalid_event", 404)
@@ -601,7 +609,7 @@ func main() {
 				return err
 			}
 
-			res, err := tx.Exec("INSERT INTO reservations (event_id, sheet_id, user_id, reserved_at) VALUES (?, ?, ?, ?)", event.ID, sheet.ID, user.ID, time.Now().UTC().Format("2006-01-02 15:04:05.000000"))
+			res, err := tx.Exec("INSERT INTO reservations (event_id, sheet_id, user_id, reserved_at) VALUES (?, ?, ?, ?)", event.ID, sheet.ID, userID, time.Now().UTC().Format("2006-01-02 15:04:05.000000"))
 			if err != nil {
 				tx.Rollback()
 				log.Println("re-try: rollback by", err)
