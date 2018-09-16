@@ -420,15 +420,15 @@ func getEventChildren(event *Event, loginUserID int64) error {
 			rMap[s.ID] = r
 		}
 	}
-	log.Printf("%#v", rMap)
 
 	for i := range sheets {
 		if r, ok := rMap[sheets[i].ID]; ok {
 			sheets[i].Mine = r.UserID == loginUserID
 			sheets[i].Reserved = true
 			sheets[i].ReservedAtUnix = r.ReservedAt.Unix()
-			event.Sheets[sheets[i].Rank].Detail = append(event.Sheets[sheets[i].Rank].Detail, sheets[i])
 		}
+
+		event.Sheets[sheets[i].Rank].Detail = append(event.Sheets[sheets[i].Rank].Detail, sheets[i])
 	}
 
 	return nil
