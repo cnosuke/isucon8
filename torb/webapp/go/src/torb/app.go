@@ -23,7 +23,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"src/github.com/sevenNt/echo-pprof"
 )
 
 type User struct {
