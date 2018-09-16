@@ -176,7 +176,11 @@ func getLoginUserID(c echo.Context) (int64, error) {
 }
 
 func getLoginUser(c echo.Context) (*User, error) {
+
+	// FIXME = CNOSUKE
 	userID := sessUserID(c)
+	//userID := 1
+
 	if userID == 0 {
 		return nil, errors.New("not logged in")
 	}
@@ -534,10 +538,16 @@ func getUserHandler(c echo.Context) error {
 		return err
 	}
 
+	// FIXME = cnosuke
 	suID := sessUserID(c)
+	//suID := int64(1)
 
 	if user.ID != suID {
 		return resError(c, "forbidden", 403)
+	}
+
+	if GlobalTorbCache.HasCache(user.ID) {
+		return c.JSON(200, GlobalTorbCache.GetData(user.ID))
 	}
 
 	rows, err := db.Query("SELECT r.*, s.rank AS sheet_rank, s.num AS sheet_num FROM reservations r INNER JOIN sheets s ON s.id = r.sheet_id WHERE r.user_id = ? ORDER BY IFNULL(r.canceled_at, r.reserved_at) DESC LIMIT 5", user.ID)
@@ -607,13 +617,16 @@ func getUserHandler(c echo.Context) error {
 		recentEvents = make([]*Event, 0)
 	}
 
-	return c.JSON(200, echo.Map{
+	m := echo.Map{
 		"id":                  user.ID,
 		"nickname":            user.Nickname,
 		"recent_reservations": recentReservations,
 		"total_price":         totalPrice,
 		"recent_events":       recentEvents,
-	})
+	}
+	GlobalTorbCache.SetData(user.ID, m)
+
+	return c.JSON(200, GlobalTorbCache.GetData(user.ID))
 }
 
 func getIndexHandler(c echo.Context) error {
@@ -762,6 +775,8 @@ func main() {
 			return err
 		}
 
+		GlobalTorbCache.ResetData(userID)
+
 		return c.JSON(201, echo.Map{
 			"id":       userID,
 			"nickname": params.Nickname,
@@ -873,6 +888,9 @@ func main() {
 
 			break
 		}
+
+		GlobalTorbCache.ResetData(userID)
+
 		return c.JSON(202, echo.Map{
 			"id":         reservationID,
 			"sheet_rank": params.Rank,
@@ -940,6 +958,8 @@ func main() {
 		if err := tx.Commit(); err != nil {
 			return err
 		}
+
+		GlobalTorbCache.ResetData(user.ID)
 
 		return c.NoContent(204)
 	}, loginRequired)
