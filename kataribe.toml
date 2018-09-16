@@ -72,3 +72,16 @@ name = "GET /api/events/:id"
 [[bundle]]
 regexp = '^(GET|HEAD) /api/users/\d+'
 name = "GET /api/users/:id"
+
+[[bundle]]
+regexp = '^(POST) /admin/api/events/\d+/actions/edit'
+name = "POST /admin/api/events/:id/actions/edit"
+
+[[bundle]]
+regexp = '^(DELETE) /api/events/\d+/sheets/.+/\d+/reservation'
+name = "DELETE /api/events/:id/sheets/:sheet/:sheet_id/reservation"
+
+[[bundle]]
+regexp = '^(POST) /api/events/\d+/actions/reserve'
+name = "POST /api/events/:id/actions/reserve"
+
