@@ -2,9 +2,9 @@ CREATE TABLE IF NOT EXISTS users (
   id          INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   nickname    VARCHAR(128) NOT NULL,
   login_name  VARCHAR(128) NOT NULL,
-  pass_hash   VARCHAR(128) NOT NULL,
-  UNIQUE KEY login_name_uniq (login_name)
+  pass_hash   VARCHAR(128) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE users ADD UNIQUE INDEX login_name_uniq(login_name);
 
 CREATE TABLE IF NOT EXISTS events (
   id          INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS sheets (
   id          INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `rank`      VARCHAR(128)     NOT NULL,
   num         INTEGER UNSIGNED NOT NULL,
-  price       INTEGER UNSIGNED NOT NULL,
-  UNIQUE KEY rank_num_uniq (`rank`, num)
+  price       INTEGER UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE sheets ADD UNIQUE INDEX rank_num_uniq(`rank`, num);
 
 CREATE TABLE IF NOT EXISTS reservations (
   id          INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -32,12 +32,13 @@ CREATE TABLE IF NOT EXISTS reservations (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ALTER TABLE reservations ADD INDEX event_id_and_sheet_id_idx (event_id, sheet_id);
 ALTER TABLE reservations ADD INDEX index_sheet_id(sheet_id);
-ALTER TABLE reservations ADD INDEX index_event_id_cancelled_at(event_id, canceled_at);
+ALTER TABLE reservations ADD INDEX idx_user_event_cancel(user_id, event_id, canceled_at);
+ALTER TABLE reservations ADD INDEX idx_event_cancel_sheet(event_id, canceled_at, sheet_id);
 
 CREATE TABLE IF NOT EXISTS administrators (
   id          INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   nickname    VARCHAR(128) NOT NULL,
   login_name  VARCHAR(128) NOT NULL,
-  pass_hash   VARCHAR(128) NOT NULL,
-  UNIQUE KEY login_name_uniq (login_name)
+  pass_hash   VARCHAR(128) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE administrators ADD UNIQUE INDEX login_name_uniq(login_name);
