@@ -239,7 +239,7 @@ func getEvent(eventID, loginUserID int64) (*Event, error) {
 	if err := db.QueryRow("SELECT * FROM events WHERE id = ?", eventID).Scan(&event.ID, &event.Title, &event.PublicFg, &event.ClosedFg, &event.Price); err != nil {
 		return nil, err
 	}
-	err := getEventChildrenLegacy(&event, loginUserID)
+	err := getEventChildrenLegacy2(&event, loginUserID)
 	return &event, err
 }
 
