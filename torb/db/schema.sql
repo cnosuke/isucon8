@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS reservations (
 ALTER TABLE reservations ADD INDEX index_sheet_id(sheet_id);
 ALTER TABLE reservations ADD INDEX idx_user_event_cancel(user_id, event_id, canceled_at);
 ALTER TABLE reservations ADD INDEX idx_event_sheet_cancel(event_id, sheet_id, canceled_at);
+ALTER TABLE reservations ADD INDEX idx_cancel_reserved(user_id, canceled_at, reserved_at);
 
 CREATE TABLE IF NOT EXISTS administrators (
   id          INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
