@@ -15,9 +15,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
+	_ "net/http/pprof"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/middleware"
@@ -315,6 +317,8 @@ func main() {
 		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"),
 		os.Getenv("DB_DATABASE"),
 	)
+
+	go http.ListenAndServe(":3000", nil)
 
 	var err error
 	db, err = sql.Open("mysql", dsn)
