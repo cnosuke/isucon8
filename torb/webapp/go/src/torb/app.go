@@ -19,7 +19,6 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
-	"github.com/k0kubun/pp"
 	"github.com/sevenNt/echo-pprof"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
@@ -220,9 +219,9 @@ func getEvents(all bool) ([]*Event, error) {
 		}
 		events = append(events, &event)
 	}
-	pp.Print(events)
+
 	for i, event := range events {
-		err := getEventChildren(event, -1)
+		err := getEventChildrenLegacy(event, -1)
 		if err != nil {
 			return nil, err
 		}
@@ -329,9 +328,6 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		//event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, &sheet)
 	}
 
-	pp.Print(sIDs)
-	pp.Print(event)
-
 	rs, err := getReservations(event.ID, sIDs)
 	if err == nil {
 		if err == sql.ErrNoRows {
@@ -339,7 +335,6 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		}
 		return err
 	}
-	pp.Print(rs)
 
 	event.Remains = event.Total
 	for rank, _ := range event.Sheets {
