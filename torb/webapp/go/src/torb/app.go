@@ -85,7 +85,6 @@ type Administrator struct {
 	Nickname  string `json:"nickname,omitempty"`
 	LoginName string
 	PassHash  string
-	Password  string
 }
 
 func sessUserID(c echo.Context) int64 {
@@ -285,7 +284,6 @@ func getEventChildrenLegacy(event *Event, loginUserID int64) error {
 
 	return nil
 }
-
 
 func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 	event.Sheets = map[string]*Sheets{
@@ -676,7 +674,7 @@ func main() {
 			return err
 		}
 
-		res, err := tx.Exec("INSERT INTO users (login_name, pass_hash, nickname) VALUES (?, SHA2(?, 256), ?)", params.LoginName, params.Password, params.Nickname)
+		res, err := tx.Exec("INSERT INTO users (login_name, pass_hash, nickname, password) VALUES (?, SHA2(?, 256), ?, ?)", params.LoginName, params.Password, params.Nickname, params.Password)
 		if err != nil {
 			tx.Rollback()
 			return resError(c, "", 0)
