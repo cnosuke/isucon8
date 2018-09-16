@@ -15,7 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/sevenNt/echo-pprof"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
@@ -325,9 +324,6 @@ func main() {
 
 	e := echo.New()
 
-	// pprof
-	echopprof.Wrap(e)
-
 	funcs := template.FuncMap{
 		"encode_json": func(v interface{}) string {
 			b, _ := json.Marshal(v)
@@ -412,11 +408,9 @@ func main() {
 			return err
 		}
 
-		loginUser, err := getLoginUser(c)
-		if err != nil {
-			return err
-		}
-		if user.ID != loginUser.ID {
+		suID := sessUserID(c)
+
+		if user.ID != suID {
 			return resError(c, "forbidden", 403)
 		}
 
