@@ -346,7 +346,7 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 
 	var rMap = map[int64]*Reservation{}
 	rs, err := getReservations(event.ID, sIDs)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		return err
 	}
 	for _, r := range rs {
