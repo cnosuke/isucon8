@@ -346,11 +346,11 @@ func getEventChildrenLegacy4(event *Event, loginUserID int64) error {
 				"canceled_at": nil,
 			}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
 			Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
-		if err == nil {
+		if err == nil  {
 			rMap[reservation.SheetID] = &reservation
 			event.Remains--
 			event.Sheets[sheet.Rank].Remains--
-		} else {
+		} else if err != sql.ErrNoRows {
 			return err
 		}
 	}
