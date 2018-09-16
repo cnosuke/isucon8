@@ -299,6 +299,7 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 	}
 	defer rows.Close()
 
+	var sheets []Sheet
 	for rows.Next() {
 		var sheet Sheet
 		if err := rows.Scan(&sheet.ID, &sheet.Rank, &sheet.Num, &sheet.Price); err != nil {
@@ -308,6 +309,10 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 		event.Total++
 		event.Sheets[sheet.Rank].Total++
 
+		sheets = append(sheets, sheet)
+	}
+
+	for _, sheet := range sheets {
 		var reservation Reservation
 		err := sq.Select(`*`).From("reservations").
 			Where(sq.And{
