@@ -238,7 +238,7 @@ func getEvent(eventID, loginUserID int64) (*Event, error) {
 	if err := db.QueryRow("SELECT * FROM events WHERE id = ?", eventID).Scan(&event.ID, &event.Title, &event.PublicFg, &event.ClosedFg, &event.Price); err != nil {
 		return nil, err
 	}
-	err := getEventChildrenLegacy(&event, loginUserID)
+	err := getEventChildren(&event, loginUserID)
 	return &event, err
 }
 
@@ -331,6 +331,9 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		//event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, &sheet)
 	}
 
+	pp.Print(sIDs)
+	pp.Print(event)
+
 	rs, err := getReservations(event.ID, sIDs)
 	if err == nil {
 		if err == sql.ErrNoRows {
@@ -338,6 +341,7 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		}
 		return err
 	}
+	pp.Print(rs)
 
 	event.Remains = event.Total
 	for rank, _ := range event.Sheets {
