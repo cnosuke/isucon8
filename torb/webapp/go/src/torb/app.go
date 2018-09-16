@@ -218,8 +218,8 @@ func getEvents(all bool) ([]*Event, error) {
 		}
 		events = append(events, &event)
 	}
-	for i, v := range events {
-		event, err := getEvent(v.ID, -1)
+	for i, ev := range events {
+		event, err := getEventChildren(ev, -1)
 		if err != nil {
 			return nil, err
 		}
@@ -236,6 +236,10 @@ func getEvent(eventID, loginUserID int64) (*Event, error) {
 	if err := db.QueryRow("SELECT * FROM events WHERE id = ?", eventID).Scan(&event.ID, &event.Title, &event.PublicFg, &event.ClosedFg, &event.Price); err != nil {
 		return nil, err
 	}
+	return getEventChildren(&event, loginUserID)
+}
+
+func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 	event.Sheets = map[string]*Sheets{
 		"S": &Sheets{},
 		"A": &Sheets{},
@@ -279,10 +283,10 @@ func getEvent(eventID, loginUserID int64) (*Event, error) {
 	}
 
 
-	rs, err := getReservations(eventID, sIDs)
+	rs, err := getReservations(event.ID, sIDs)
 	if err == nil {
 		if err == sql.ErrNoRows {
-			return &event, nil
+			return event, nil
 		}
 		return nil, err
 	}
@@ -310,7 +314,7 @@ func getEvent(eventID, loginUserID int64) (*Event, error) {
 	}
 
 
-	return &event, nil
+	return event, nil
 }
 
 func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
