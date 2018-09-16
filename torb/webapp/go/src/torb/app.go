@@ -290,7 +290,7 @@ func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 		if err == sql.ErrNoRows {
 			return event, nil
 		}
-		return nil, err
+		return event, err
 	}
 
 	event.Remains = event.Total
