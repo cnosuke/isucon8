@@ -22,7 +22,6 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/middleware"
-	"github.com/sevenNt/echo-pprof"
 )
 
 type User struct {
@@ -1274,8 +1273,6 @@ func main() {
 		GlobalTorbIndexCache.ResetDataByRemote()
 		return nil
 	})
-
-	echopprof.Wrap(e)
 
 	e.Start(":8080")
 }
