@@ -349,7 +349,7 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 	}
 
 	var rMap = map[int64]*Reservation{}
-	rs, err := getReservationFuck4(event.ID, sIDs)
+	rs, err := getReservations(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
@@ -551,20 +551,39 @@ func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
 			"event_id":    eID,
 			"sheet_id":    sIDs,
 			"canceled_at": nil,
-		}).GroupBy(`sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).Query()
+		}).GroupBy(`sheet_id`).RunWith(db).Query()
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var reservations []*Reservation
+	var allrs []*Reservation
+	var minReservedUnixAtMap = map[int64]int64{}
+
 	for rows.Next() {
 		var reservation Reservation
 		err = rows.Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
 		if err != nil {
 			return nil, err
 		}
-		reservations = append(reservations, &reservation)
+		min, ok := minReservedUnixAtMap[reservation.ID]
+		if ok {
+			if reservation.ReservedAt.Unix() < min {
+				minReservedUnixAtMap[reservation.ID] = reservation.ReservedAt.Unix()
+			}
+		} else {
+			minReservedUnixAtMap[reservation.ID] = reservation.ReservedAt.Unix()
+		}
+		allrs = append(allrs, &reservation)
+	}
+
+	var reservations []*Reservation
+	for _, reservation := range allrs {
+		if min, ok := minReservedUnixAtMap[reservation.ID]; ok {
+			if reservation.ReservedAt.Unix() == min {
+				reservations = append(reservations, reservation)
+			}
+		}
 	}
 
 	return reservations, nil
