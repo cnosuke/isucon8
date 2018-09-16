@@ -299,6 +299,9 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 	}
 	defer rows.Close()
 
+	var rs []Reservation
+	var sheets []*Sheet
+	var sMap = map[int64]*Sheet{}
 	for rows.Next() {
 		var sheet Sheet
 		if err := rows.Scan(&sheet.ID, &sheet.Rank, &sheet.Num, &sheet.Price); err != nil {
@@ -318,19 +321,38 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 				},
 			}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
 			Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
-		if err == nil {
-			sheet.Mine = reservation.UserID == loginUserID
-			sheet.Reserved = true
-			sheet.ReservedAtUnix = reservation.ReservedAt.Unix()
-		} else if err == sql.ErrNoRows {
-			event.Remains++
-			event.Sheets[sheet.Rank].Remains++
+		if err == nil || err == sql.ErrNoRows {
+			rs = append(rs, reservation)
 		} else {
 			return err
 		}
 
-		event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, &sheet)
+		sheets = append(sheets, &sheet)
+		sMap[sheet.ID] = &sheet
 	}
+
+
+	event.Remains = event.Total
+	for rank, _ := range event.Sheets {
+		event.Sheets[rank].Remains = event.Sheets[rank].Total
+	}
+
+	var rMap = map[int64]*Reservation{}
+	for _, r := range rs {
+		event.Remains--
+		event.Sheets[sMap[r.SheetID].Rank].Remains--
+		rMap[r.SheetID] = &r
+	}
+
+	for i := range sheets {
+		if r, ok := rMap[sheets[i].ID]; ok {
+			sheets[i].Mine = r.UserID == loginUserID
+			sheets[i].Reserved = true
+			sheets[i].ReservedAtUnix = r.ReservedAt.Unix()
+			event.Sheets[sheets[i].Rank].Detail = append(event.Sheets[sheets[i].Rank].Detail, sheets[i])
+		}
+	}
+
 
 	return nil
 }
@@ -385,7 +407,6 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		event.Sheets[sMap[r.SheetID].Rank].Remains--
 		rMap[r.SheetID] = r
 	}
-	log.Printf("%#v", rMap)
 
 	for i := range sheets {
 		if r, ok := rMap[sheets[i].ID]; ok {
