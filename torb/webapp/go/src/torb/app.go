@@ -220,7 +220,7 @@ func getEvents(all bool) ([]*Event, error) {
 	}
 	pp.Print(events)
 	for i, event := range events {
-		err := getEventChildren(event, -1)
+		err := getEventChildrenLegacy(event, -1)
 		if err != nil {
 			return nil, err
 		}
