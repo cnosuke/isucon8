@@ -407,14 +407,10 @@ func getEventChildren(event *Event, loginUserID int64) error {
 
 func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
 	rows, err := sq.Select(`*`).From("reservations").
-		Where(sq.And{
-			sq.Eq{
+		Where(sq.Eq{
 				"event_id": eID,
 				"sheet_id": sIDs,
-			},
-			sq.Eq{
 				"canceled_at": nil,
-			},
 		}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).Query()
 	if err != nil {
 		return nil, err
