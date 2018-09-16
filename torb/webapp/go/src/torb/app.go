@@ -633,10 +633,16 @@ func getUserHandler(c echo.Context) error {
 }
 
 func getIndexHandler(c echo.Context) error {
-	events, err := getEvents(false)
-	if err != nil {
-		return err
+	if !GlobalTorbIndexCache.HasCache() {
+		events0, err := getEvents(false)
+		if err != nil {
+			return err
+		}
+
+		GlobalTorbIndexCache.SetData(events0)
 	}
+	events := GlobalTorbIndexCache.GetData()
+
 	for i, v := range events {
 		events[i] = sanitizeEvent(v)
 	}
@@ -1039,6 +1045,9 @@ func main() {
 		if err != nil {
 			return err
 		}
+
+		GlobalTorbIndexCache.ResetData()
+
 		return c.JSON(200, event)
 	}, adminLoginRequired)
 	e.GET("/admin/api/events/:id", func(c echo.Context) error {
@@ -1100,6 +1109,9 @@ func main() {
 		if err != nil {
 			return err
 		}
+
+		GlobalTorbIndexCache.ResetData()
+
 		c.JSON(200, e)
 		return nil
 	}, adminLoginRequired)
