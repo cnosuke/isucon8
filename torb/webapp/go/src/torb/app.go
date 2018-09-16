@@ -28,8 +28,8 @@ import (
 type User struct {
 	ID        int64  `json:"id,omitempty"`
 	Nickname  string `json:"nickname,omitempty"`
-	LoginName string `json:"login_name,omitempty"`
-	PassHash  string `json:"pass_hash,omitempty"`
+	LoginName string
+	PassHash  string
 }
 
 type Event struct {
