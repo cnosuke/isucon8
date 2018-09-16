@@ -632,7 +632,7 @@ func main() {
 		}
 
 		var user User
-		if err := tx.QueryRow("SELECT * FROM users WHERE login_name = ?", params.LoginName).Scan(&user.ID, &user.LoginName, &user.Nickname, &user.PassHash); err != sql.ErrNoRows {
+		if err := tx.QueryRow("SELECT id, nickname, login_name, pass_hash FROM users WHERE login_name = ?", params.LoginName).Scan(&user.ID, &user.LoginName, &user.Nickname, &user.PassHash); err != sql.ErrNoRows {
 			tx.Rollback()
 			if err == nil {
 				return resError(c, "duplicated", 409)
@@ -668,7 +668,7 @@ func main() {
 		c.Bind(&params)
 
 		user := new(User)
-		if err := db.QueryRow("SELECT * FROM users WHERE login_name = ?", params.LoginName).Scan(&user.ID, &user.LoginName, &user.Nickname, &user.PassHash); err != nil {
+		if err := db.QueryRow("SELECT id, login_name, nickname, pass_hash FROM users WHERE login_name = ?", params.LoginName).Scan(&user.ID, &user.LoginName, &user.Nickname, &user.PassHash); err != nil {
 			if err == sql.ErrNoRows {
 				return resError(c, "authentication_failed", 401)
 			}
