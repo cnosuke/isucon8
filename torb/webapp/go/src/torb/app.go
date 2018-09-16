@@ -299,7 +299,6 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 	}
 	defer rows.Close()
 
-	var sheets []Sheet
 	for rows.Next() {
 		var sheet Sheet
 		if err := rows.Scan(&sheet.ID, &sheet.Rank, &sheet.Num, &sheet.Price); err != nil {
@@ -309,11 +308,6 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 		event.Total++
 		event.Sheets[sheet.Rank].Total++
 
-		sheets = append(sheets, sheet)
-	}
-
-	//var rs []Reservation
-	for _, sheet := range sheets {
 		var reservation Reservation
 		err := sq.Select(`*`).From("reservations").
 			Where(sq.Eq{
@@ -335,30 +329,6 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 
 		event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, &sheet)
 	}
-	//for _, sheet := range sheets {
-	//	var reservation Reservation
-	//	err := sq.Select(`*`).From("reservations").
-	//		Where(sq.And{
-	//			sq.Eq{
-	//				"event_id":    event.ID,
-	//				"sheet_id":    sheet.ID,
-	//				"canceled_at": nil,
-	//			},
-	//		}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
-	//		Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
-	//	if err == nil {
-	//		sheet.Mine = reservation.UserID == loginUserID
-	//		sheet.Reserved = true
-	//		sheet.ReservedAtUnix = reservation.ReservedAt.Unix()
-	//	} else if err == sql.ErrNoRows {
-	//		event.Remains++
-	//		event.Sheets[sheet.Rank].Remains++
-	//	} else {
-	//		return err
-	//	}
-	//
-	//	event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, &sheet)
-	//}
 
 	return nil
 }
