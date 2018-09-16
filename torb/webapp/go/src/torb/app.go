@@ -289,7 +289,7 @@ func getEventChildrenLegacy4(event *Event, loginUserID int64) error {
 				"canceled_at": nil,
 			}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
 			Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
-		if err == nil  {
+		if err == nil {
 			rMap[reservation.SheetID] = &reservation
 			event.Remains--
 			event.Sheets[sheet.Rank].Remains--
@@ -310,7 +310,6 @@ func getEventChildrenLegacy4(event *Event, loginUserID int64) error {
 
 	return nil
 }
-
 
 func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 	event.Sheets = map[string]*Sheets{
@@ -435,29 +434,27 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 //	return nil
 //}
 
-
 func getReservationFuck(eID int64, sIDs []int64) ([]*Reservation, error) {
 	var rs []*Reservation
 	for _, sID := range sIDs {
-			var reservation Reservation
-			err := sq.Select(`*`).From("reservations").
-				Where(sq.Eq{
-					"event_id":    eID,
-					"sheet_id":    sID,
-					"canceled_at": nil,
-				}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
-				Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					continue
-				}
-				return nil, err
+		var reservation Reservation
+		err := sq.Select(`*`).From("reservations").
+			Where(sq.Eq{
+				"event_id":    eID,
+				"sheet_id":    sID,
+				"canceled_at": nil,
+			}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
+			Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				continue
 			}
+			return nil, err
+		}
 		rs = append(rs, &reservation)
 	}
 	return rs, nil
 }
-
 
 func getReservationFuck2(eID int64, sIDs []int64) ([]*Reservation, error) {
 	var rs []*Reservation
