@@ -29,6 +29,7 @@ innodb_buffer_pool_size = 768M
 innodb_write_io_threads = 16
 innodb_read_io_threads = 16
 innodb_thread_concurrency = 16
+max_heap_table_size = 512M
 
 # this is only for embedded server
 [embedded]
