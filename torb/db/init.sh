@@ -4,7 +4,7 @@ ROOT_DIR=$(cd $(dirname $0)/..; pwd)
 DB_DIR="$ROOT_DIR/db"
 BENCH_DIR="$ROOT_DIR/bench"
 
-DATASET_FILE="isucon8q-initial-dataset.sql"
+DATASET_FILE="${DATASET_FILE:-"isucon8q-initial-dataset.sql"}"
 
 export MYSQL_PWD=isucon
 
