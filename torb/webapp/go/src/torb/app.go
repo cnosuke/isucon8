@@ -22,7 +22,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"firebase.google.com/go/db"
 )
 
 type User struct {
@@ -325,7 +324,7 @@ func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
 			"sheet_id": sIDs,
 		},
 		sq.Eq{
-			"canceled_at": nil
+			"canceled_at": nil,
 		},
 	}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).Query()
 	if err != nil {

@@ -2,6 +2,12 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/Masterminds/squirrel",
+			"repository": "https://github.com/Masterminds/squirrel",
+			"revision": "2a316574a6936ea670d3fddabe5e106ba894da1b",
+			"branch": "v1"
+		},
+		{
 			"importpath": "github.com/dgrijalva/jwt-go",
 			"repository": "https://github.com/dgrijalva/jwt-go",
 			"revision": "0b96aaa707760d6ab28d9b9d1913ff5993328bae",
@@ -78,6 +84,18 @@
 			"revision": "2a618302b929cc20862dda3aa6f02f64dbe740dd",
 			"branch": "master",
 			"path": "/random"
+		},
+		{
+			"importpath": "github.com/lann/builder",
+			"repository": "https://github.com/lann/builder",
+			"revision": "47ae307949d02aa1f1069fdafc00ca08e1dbabac",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/lann/ps",
+			"repository": "https://github.com/lann/ps",
+			"revision": "62de8c46ede02a7675c4c79c84883eb164cb71e3",
+			"branch": "master"
 		},
 		{
 			"importpath": "github.com/mattn/go-colorable",
