@@ -312,8 +312,8 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 		err := sq.Select(`*`).From("reservations").
 			Where(sq.And{
 				sq.Eq{
-					"event_id": event.ID,
-					"sheet_id": sheet.ID,
+					"event_id":    event.ID,
+					"sheet_id":    sheet.ID,
 					"canceled_at": nil,
 				},
 			}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
@@ -702,18 +702,14 @@ func main() {
 		c.Bind(&params)
 
 		user := new(User)
-		if err := db.QueryRow("SELECT id, login_name, nickname, pass_hash FROM users WHERE login_name = ?", params.LoginName).Scan(&user.ID, &user.LoginName, &user.Nickname, &user.PassHash); err != nil {
+		if err := db.QueryRow("SELECT id, login_name, nickname, pass_hash, password FROM users WHERE login_name = ?", params.LoginName).Scan(&user.ID, &user.LoginName, &user.Nickname, &user.PassHash, &user.Password); err != nil {
 			if err == sql.ErrNoRows {
 				return resError(c, "authentication_failed", 401)
 			}
 			return err
 		}
 
-		var passHash string
-		if err := db.QueryRow("SELECT SHA2(?, 256)", params.Password).Scan(&passHash); err != nil {
-			return err
-		}
-		if user.PassHash != passHash {
+		if params.Password != user.Password {
 			return resError(c, "authentication_failed", 401)
 		}
 
