@@ -336,6 +336,7 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		event.Sheets[sMap[r.SheetID].Rank].Remains--
 		rMap[r.SheetID] = r
 	}
+	log.Printf("%#v", rMap)
 
 	for i := range sheets {
 		if r, ok := rMap[sheets[i].ID]; ok {
