@@ -345,7 +345,7 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 	}
 
 	var rMap = map[int64]*Reservation{}
-	rs, err := getReservations(event.ID, sIDs)
+	rs, err := getReservationFuck(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
@@ -430,6 +430,30 @@ func getEventChildren(event *Event, loginUserID int64) error {
 
 	return nil
 }
+
+
+func getReservationFuck(eID int64, sIDs []int64) ([]*Reservation, error) {
+	var rs []*Reservation
+	for _, sID := range sIDs {
+			var reservation Reservation
+			err := sq.Select(`*`).From("reservations").
+				Where(sq.Eq{
+					"event_id":    eID,
+					"sheet_id":    sID,
+					"canceled_at": nil,
+				}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
+				Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					continue
+				}
+				return nil, err
+			}
+		rs = append(rs, &reservation)
+	}
+	return rs, nil
+}
+
 
 func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
 	rows, err := sq.Select(`*`).From("reservations").
