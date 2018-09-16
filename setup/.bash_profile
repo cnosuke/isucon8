@@ -45,3 +45,5 @@ alias gp='git push'
 alias ga='git commit -am'
 
 export PS1="[\u@$(hostname) \w]$ "
+
+export EDITOR=vim
