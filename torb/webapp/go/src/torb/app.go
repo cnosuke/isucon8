@@ -389,6 +389,60 @@ func getUserHandler(c echo.Context) error {
 	})
 }
 
+func getIndexHandler(c echo.Context) error {
+	events, err := getEvents(false)
+	if err != nil {
+		return err
+	}
+	for i, v := range events {
+		events[i] = sanitizeEvent(v)
+	}
+	return c.Render(200, "index.tmpl", echo.Map{
+		"events": events,
+		"user":   c.Get("user"),
+		"origin": c.Scheme() + "://" + c.Request().Host,
+	})
+}
+
+func getAdminHandler(c echo.Context) error {
+	var events []*Event
+	administrator := c.Get("administrator")
+	if administrator != nil {
+		var err error
+		if events, err = getEvents(true); err != nil {
+			return err
+		}
+	}
+	return c.Render(200, "admin.tmpl", echo.Map{
+		"events":        events,
+		"administrator": administrator,
+		"origin":        c.Scheme() + "://" + c.Request().Host,
+	})
+}
+
+func getEventHandler(c echo.Context) error {
+	eventID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		return resError(c, "not_found", 404)
+	}
+
+	loginUserID := int64(-1)
+	if userID, err := getLoginUserID(c); err == nil {
+		loginUserID = userID
+	}
+
+	event, err := getEvent(eventID, loginUserID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return resError(c, "not_found", 404)
+		}
+		return err
+	} else if !event.PublicFg {
+		return resError(c, "not_found", 404)
+	}
+	return c.JSON(200, sanitizeEvent(event))
+}
+
 func validateRank(rank string) bool {
 	var count int
 	db.QueryRow("SELECT COUNT(*) FROM sheets WHERE `rank` = ?", rank).Scan(&count)
@@ -433,20 +487,7 @@ func main() {
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{Output: os.Stderr}))
 	e.Static("/", "public")
-	e.GET("/", func(c echo.Context) error {
-		events, err := getEvents(false)
-		if err != nil {
-			return err
-		}
-		for i, v := range events {
-			events[i] = sanitizeEvent(v)
-		}
-		return c.Render(200, "index.tmpl", echo.Map{
-			"events": events,
-			"user":   c.Get("user"),
-			"origin": c.Scheme() + "://" + c.Request().Host,
-		})
-	}, fillinUser)
+	e.GET("/", getIndexHandler, fillinUser)
 	e.GET("/initialize", func(c echo.Context) error {
 		cmd := exec.Command("../../db/init.sh")
 		cmd.Stdin = os.Stdin
@@ -544,28 +585,7 @@ func main() {
 		}
 		return c.JSON(200, events)
 	})
-	e.GET("/api/events/:id", func(c echo.Context) error {
-		eventID, err := strconv.ParseInt(c.Param("id"), 10, 64)
-		if err != nil {
-			return resError(c, "not_found", 404)
-		}
-
-		loginUserID := int64(-1)
-		if userID, err := getLoginUserID(c); err == nil {
-			loginUserID = userID
-		}
-
-		event, err := getEvent(eventID, loginUserID)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				return resError(c, "not_found", 404)
-			}
-			return err
-		} else if !event.PublicFg {
-			return resError(c, "not_found", 404)
-		}
-		return c.JSON(200, sanitizeEvent(event))
-	})
+	e.GET("/api/events/:id", getEventHandler)
 	e.POST("/api/events/:id/actions/reserve", func(c echo.Context) error {
 		eventID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
@@ -700,21 +720,7 @@ func main() {
 
 		return c.NoContent(204)
 	}, loginRequired)
-	e.GET("/admin/", func(c echo.Context) error {
-		var events []*Event
-		administrator := c.Get("administrator")
-		if administrator != nil {
-			var err error
-			if events, err = getEvents(true); err != nil {
-				return err
-			}
-		}
-		return c.Render(200, "admin.tmpl", echo.Map{
-			"events":        events,
-			"administrator": administrator,
-			"origin":        c.Scheme() + "://" + c.Request().Host,
-		})
-	}, fillinAdministrator)
+	e.GET("/admin/", getAdminHandler, fillinAdministrator)
 	e.POST("/admin/api/actions/login", func(c echo.Context) error {
 		var params struct {
 			LoginName string `json:"login_name"`
