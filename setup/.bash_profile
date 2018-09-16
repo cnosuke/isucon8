@@ -39,6 +39,7 @@ function gl(){
   else
     git --no-pager log --date=iso --pretty=format:'%h %Cgreen%ad %Cblue%an %Creset%s %C(blue)%d%Creset' -10
   fi
+  echo
 }
 alias gp='git push'
 alias ga='git commit -am'
