@@ -224,6 +224,9 @@ func getEvents(all bool) ([]*Event, error) {
 		if err != nil {
 			return nil, err
 		}
+		if event == nil {
+			return nil, "event was nil"
+		}
 
 		for k := range event.Sheets {
 			event.Sheets[k].Detail = nil
