@@ -221,7 +221,7 @@ func getEvents(all bool) ([]*Event, error) {
 	}
 
 	for i, event := range events {
-		err := getEventChildren(event, -1)
+		err := getEventChildrenLegacy(event, -1)
 		if err != nil {
 			return nil, err
 		}
