@@ -349,7 +349,7 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 	}
 
 	var rMap = map[int64]*Reservation{}
-	rs, err := getReservationFuck(event.ID, sIDs)
+	rs, err := getReservationFuck2(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
