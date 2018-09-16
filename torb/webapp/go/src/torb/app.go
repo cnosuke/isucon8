@@ -219,13 +219,10 @@ func getEvents(all bool) ([]*Event, error) {
 		events = append(events, &event)
 	}
 	pp.Print(events)
-	for i, ev := range events {
-		event, err := getEventChildren(ev, -1)
+	for i, event := range events {
+		err := getEventChildren(event, -1)
 		if err != nil {
 			return nil, err
-		}
-		if event == nil {
-			return nil, fmt.Errorf("event was nil")
 		}
 
 		for k := range event.Sheets {
@@ -241,10 +238,11 @@ func getEvent(eventID, loginUserID int64) (*Event, error) {
 	if err := db.QueryRow("SELECT * FROM events WHERE id = ?", eventID).Scan(&event.ID, &event.Title, &event.PublicFg, &event.ClosedFg, &event.Price); err != nil {
 		return nil, err
 	}
-	return getEventChildren(&event, loginUserID)
+	err := getEventChildren(&event, loginUserID)
+	return &event, err
 }
 
-func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
+func getEventChildren(event *Event, loginUserID int64) error {
 	event.Sheets = map[string]*Sheets{
 		"S": &Sheets{},
 		"A": &Sheets{},
@@ -254,7 +252,7 @@ func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 
 	rows, err := db.Query("SELECT * FROM sheets ORDER BY `rank`, num")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer rows.Close()
 
@@ -264,7 +262,7 @@ func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 	for rows.Next() {
 		var sheet Sheet
 		if err := rows.Scan(&sheet.ID, &sheet.Rank, &sheet.Num, &sheet.Price); err != nil {
-			return nil, err
+			return err
 		}
 		event.Sheets[sheet.Rank].Price = event.Price + sheet.Price
 		event.Total++
@@ -290,9 +288,9 @@ func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 	rs, err := getReservations(event.ID, sIDs)
 	if err == nil {
 		if err == sql.ErrNoRows {
-			return event, nil
+			return nil
 		}
-		return event, err
+		return err
 	}
 
 	event.Remains = event.Total
@@ -317,7 +315,7 @@ func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 		}
 	}
 
-	return event, nil
+	return nil
 }
 
 func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
