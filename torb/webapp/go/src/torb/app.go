@@ -464,7 +464,7 @@ func getReservationFuck2(eID int64, sIDs []int64) ([]*Reservation, error) {
 				"event_id":    eID,
 				"sheet_id":    sID,
 				"canceled_at": nil,
-			}).GroupBy(`event_id, sheet_id`).OrderBy(`reserved_at DESC`).Limit(1).RunWith(db).QueryRow().
+			}).GroupBy(`event_id, sheet_id`).OrderBy(`reserved_at ASC`).Limit(1).RunWith(db).QueryRow().
 			Scan(&reservation.ID, &reservation.EventID, &reservation.SheetID, &reservation.UserID, &reservation.ReservedAt, &reservation.CanceledAt)
 		if err != nil {
 			if err == sql.ErrNoRows {
