@@ -14,6 +14,7 @@ func (t *TorbCache) GetData(uid int64) interface{} {
 
 func (t *TorbCache) ResetData(uid int64) {
 	t.Data[uid] = nil
+	GlobalTorbIndexCache.ResetData()
 }
 
 func (t *TorbCache) HasCache(uid int64) bool {
@@ -28,3 +29,31 @@ func NewGlobalTorbCache() TorbCache {
 }
 
 var GlobalTorbCache = NewGlobalTorbCache()
+
+type TorbIndexCache struct {
+	Data []*Event
+}
+
+func (t *TorbIndexCache) SetData(d []*Event) {
+	t.Data = d
+}
+
+func (t *TorbIndexCache) GetData() []*Event {
+	return t.Data
+}
+
+func (t *TorbIndexCache) ResetData() {
+	t.Data = nil
+}
+
+func (t *TorbIndexCache) HasCache() bool {
+	return t.Data != nil
+}
+
+func NewGlobalTorbIndexCache() TorbIndexCache {
+	t := TorbIndexCache{}
+	t.Data = nil
+	return t
+}
+
+var GlobalTorbIndexCache = NewGlobalTorbIndexCache()
