@@ -316,8 +316,6 @@ func getEventChildrenLegacy2(event *Event, loginUserID int64) error {
 				sq.Eq{
 					"event_id": event.ID,
 					"sheet_id": sheet.ID,
-				},
-				sq.Eq{
 					"canceled_at": nil,
 				},
 			}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).QueryRow().
