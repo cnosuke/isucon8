@@ -6,14 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	sq "github.com/Masterminds/squirrel"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/sessions"
-	"github.com/k0kubun/pp"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo-contrib/session"
-	"github.com/labstack/echo/middleware"
-	"github.com/sevenNt/echo-pprof"
 	"html/template"
 	"io"
 	"log"
@@ -23,6 +15,15 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	sq "github.com/Masterminds/squirrel"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/sessions"
+	"github.com/k0kubun/pp"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo-contrib/session"
+	"github.com/labstack/echo/middleware"
+	"src/github.com/sevenNt/echo-pprof"
 )
 
 type User struct {
@@ -238,7 +239,7 @@ func getEvent(eventID, loginUserID int64) (*Event, error) {
 	if err := db.QueryRow("SELECT * FROM events WHERE id = ?", eventID).Scan(&event.ID, &event.Title, &event.PublicFg, &event.ClosedFg, &event.Price); err != nil {
 		return nil, err
 	}
-	err := getEventChildren(&event, loginUserID)
+	err := getEventChildrenLegacy(&event, loginUserID)
 	return &event, err
 }
 
