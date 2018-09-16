@@ -6,13 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	sq "github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
+	"github.com/k0kubun/pp"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/middleware"
 	"github.com/sevenNt/echo-pprof"
-	sq "github.com/Masterminds/squirrel"
 	"html/template"
 	"io"
 	"log"
@@ -22,7 +23,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/k0kubun/pp"
 )
 
 type User struct {
@@ -218,12 +218,12 @@ func getEvents(all bool) ([]*Event, error) {
 		}
 		events = append(events, &event)
 	}
+	pp.Print(events)
 	for i, ev := range events {
 		event, err := getEventChildren(ev, -1)
 		if err != nil {
 			return nil, err
 		}
-		pp.Print(event)
 
 		for k := range event.Sheets {
 			event.Sheets[k].Detail = nil
@@ -284,7 +284,6 @@ func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 		//event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, &sheet)
 	}
 
-
 	rs, err := getReservations(event.ID, sIDs)
 	if err == nil {
 		if err == sql.ErrNoRows {
@@ -315,21 +314,20 @@ func getEventChildren(event *Event, loginUserID int64) (*Event, error) {
 		}
 	}
 
-
 	return event, nil
 }
 
 func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
 	rows, err := sq.Select(`*`).From("reservations").
 		Where(sq.And{
-		sq.Eq{
-			"event_id": eID,
-			"sheet_id": sIDs,
-		},
-		sq.Eq{
-			"canceled_at": nil,
-		},
-	}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).Query()
+			sq.Eq{
+				"event_id": eID,
+				"sheet_id": sIDs,
+			},
+			sq.Eq{
+				"canceled_at": nil,
+			},
+		}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).Query()
 	if err != nil {
 		return nil, err
 	}
