@@ -400,10 +400,7 @@ func getEventChildren(event *Event, loginUserID int64) error {
 	}
 
 	rs, err := getReservations(event.ID, sIDs)
-	if err == nil {
-		if err == sql.ErrNoRows {
-			return nil
-		}
+	if err != nil {
 		return err
 	}
 
