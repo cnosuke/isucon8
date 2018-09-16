@@ -216,8 +216,8 @@ func getEvents(all bool) ([]*Event, error) {
 		}
 		events = append(events, &event)
 	}
-	for i, v := range events {
-		event, err := getEvent(v.ID, -1)
+	for i, ev := range events {
+		event, err := getEventChildren(ev, -1)
 		if err != nil {
 			return nil, err
 		}
