@@ -221,7 +221,7 @@ func getEvents(all bool) ([]*Event, error) {
 	}
 
 	for i, event := range events {
-		err := getEventChildrenLegacy(event, -1)
+		err := getEventChildren(event, -1)
 		if err != nil {
 			return nil, err
 		}
@@ -327,6 +327,10 @@ func getEventChildren(event *Event, loginUserID int64) error {
 
 		//event.Sheets[sheet.Rank].Detail = append(event.Sheets[sheet.Rank].Detail, &sheet)
 	}
+
+	log.Printf("sIDs len: %d", len(sIDs))
+	log.Printf("sMap len: %d", len(sMap))
+	log.Printf("sheets len: %d", len(sheets))
 
 	rs, err := getReservations(event.ID, sIDs)
 	if err == nil {
