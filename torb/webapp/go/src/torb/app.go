@@ -349,7 +349,7 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 	}
 
 	var rMap = map[int64]*Reservation{}
-	rs, err := getReservationFuck(event.ID, sIDs)
+	rs, err := getReservationFuck4(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
@@ -372,68 +372,68 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 	return nil
 }
 
-func getEventChildren(event *Event, loginUserID int64) error {
-	event.Sheets = map[string]*Sheets{
-		"S": &Sheets{},
-		"A": &Sheets{},
-		"B": &Sheets{},
-		"C": &Sheets{},
-	}
-
-	rows, err := db.Query("SELECT * FROM sheets ORDER BY `rank`, num")
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	var sheets []*Sheet
-	var sIDs []int64
-	var sMap = map[int64]*Sheet{}
-	for rows.Next() {
-		var sheet Sheet
-		if err := rows.Scan(&sheet.ID, &sheet.Rank, &sheet.Num, &sheet.Price); err != nil {
-			return err
-		}
-		event.Sheets[sheet.Rank].Price = event.Price + sheet.Price
-		event.Total++
-		event.Sheets[sheet.Rank].Total++
-
-		sheets = append(sheets, &sheet)
-		sMap[sheet.ID] = &sheet
-		sIDs = append(sIDs, sheet.ID)
-	}
-
-	rs, err := getReservationFuck4(event.ID, sIDs)
-	if err != nil {
-		return err
-	}
-
-	event.Remains = event.Total
-	for rank, _ := range event.Sheets {
-		event.Sheets[rank].Remains = event.Sheets[rank].Total
-	}
-
-	var rMap = map[int64]*Reservation{}
-	for _, r := range rs {
-		if s, ok := sMap[r.SheetID]; ok {
-			event.Remains--
-			event.Sheets[s.Rank].Remains--
-			rMap[s.ID] = r
-		}
-	}
-
-	for i := range sheets {
-		if r, ok := rMap[sheets[i].ID]; ok {
-			sheets[i].Mine = r.UserID == loginUserID
-			sheets[i].Reserved = true
-			sheets[i].ReservedAtUnix = r.ReservedAt.Unix()
-		}
-
-		event.Sheets[sheets[i].Rank].Detail = append(event.Sheets[sheets[i].Rank].Detail, sheets[i])
-	}
-
-	return nil
-}
+//func getEventChildren(event *Event, loginUserID int64) error {
+//	event.Sheets = map[string]*Sheets{
+//		"S": &Sheets{},
+//		"A": &Sheets{},
+//		"B": &Sheets{},
+//		"C": &Sheets{},
+//	}
+//
+//	rows, err := db.Query("SELECT * FROM sheets ORDER BY `rank`, num")
+//	if err != nil {
+//		return err
+//	}
+//	defer rows.Close()
+//
+//	var sheets []*Sheet
+//	var sIDs []int64
+//	var sMap = map[int64]*Sheet{}
+//	for rows.Next() {
+//		var sheet Sheet
+//		if err := rows.Scan(&sheet.ID, &sheet.Rank, &sheet.Num, &sheet.Price); err != nil {
+//			return err
+//		}
+//		event.Sheets[sheet.Rank].Price = event.Price + sheet.Price
+//		event.Total++
+//		event.Sheets[sheet.Rank].Total++
+//
+//		sheets = append(sheets, &sheet)
+//		sMap[sheet.ID] = &sheet
+//		sIDs = append(sIDs, sheet.ID)
+//	}
+//
+//	rs, err := getReservationFuck4(event.ID, sIDs)
+//	if err != nil {
+//		return err
+//	}
+//
+//	event.Remains = event.Total
+//	for rank, _ := range event.Sheets {
+//		event.Sheets[rank].Remains = event.Sheets[rank].Total
+//	}
+//
+//	var rMap = map[int64]*Reservation{}
+//	for _, r := range rs {
+//		if s, ok := sMap[r.SheetID]; ok {
+//			event.Remains--
+//			event.Sheets[s.Rank].Remains--
+//			rMap[s.ID] = r
+//		}
+//	}
+//
+//	for i := range sheets {
+//		if r, ok := rMap[sheets[i].ID]; ok {
+//			sheets[i].Mine = r.UserID == loginUserID
+//			sheets[i].Reserved = true
+//			sheets[i].ReservedAtUnix = r.ReservedAt.Unix()
+//		}
+//
+//		event.Sheets[sheets[i].Rank].Detail = append(event.Sheets[sheets[i].Rank].Detail, sheets[i])
+//	}
+//
+//	return nil
+//}
 
 
 func getReservationFuck(eID int64, sIDs []int64) ([]*Reservation, error) {
@@ -551,7 +551,7 @@ func getReservations(eID int64, sIDs []int64) ([]*Reservation, error) {
 			"event_id":    eID,
 			"sheet_id":    sIDs,
 			"canceled_at": nil,
-		}).GroupBy(`event_id, sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).Query()
+		}).GroupBy(`sheet_id`).Having(`reserved_at = MIN(reserved_at)`).RunWith(db).Query()
 	if err != nil {
 		return nil, err
 	}
