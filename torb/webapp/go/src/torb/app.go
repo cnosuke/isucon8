@@ -399,7 +399,7 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		sIDs = append(sIDs, sheet.ID)
 	}
 
-	rs, err := getReservationFuck2(event.ID, sIDs)
+	rs, err := getReservationFuck(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
