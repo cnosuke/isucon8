@@ -345,7 +345,7 @@ func getEventChildrenLegacy5(event *Event, loginUserID int64) error {
 	}
 
 	var rMap = map[int64]*Reservation{}
-	rs, err := getReservations(event.ID, sIDs)
+	rs, err := getReservationFuck(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
@@ -399,7 +399,7 @@ func getEventChildren(event *Event, loginUserID int64) error {
 		sIDs = append(sIDs, sheet.ID)
 	}
 
-	rs, err := getReservations(event.ID, sIDs)
+	rs, err := getReservationFuck(event.ID, sIDs)
 	if err != nil {
 		return err
 	}
