@@ -10,8 +10,8 @@
 
 # this is only for the mysqld standalone daemon
 [mysqld]
-slow_query_log=1
-long_query_time = 0.01
+slow_query_log=0
+long_query_time =10
 log_output = TABLE
 
 max_connections = 1024
